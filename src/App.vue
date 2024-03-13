@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import Cytoscape from './components/Cytoscape.vue';
 
-/*   nodes: ,
-  edges: */
 const edges = [
     {
       data: {
@@ -52,6 +50,8 @@ const edges = [
   }];
 
 /* 
+  create github repo
+
   need to be able to make a docker compose so i need to add:
    - ability to add nodes and edges
    - delete nodes and deges

@@ -50,8 +50,6 @@ const edges = [
   }];
 
 /* 
-  create github repo
-
   need to be able to make a docker compose so i need to add:
    - ability to add nodes and edges
    - delete nodes and deges

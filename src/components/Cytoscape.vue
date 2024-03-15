@@ -3,13 +3,16 @@ import { watchEffect, ref } from "vue";
 import cytoscape from "cytoscape";
 import type { EdgeDefinition, NodeDefinition } from "cytoscape";
 
-const props = withDefaults(defineProps<{
-  nodes?: NodeDefinition[];
-  edges?: EdgeDefinition[];
-}>(), {
-  nodes: () => [],
-  edges: () => []
-})
+const props = withDefaults(
+  defineProps<{
+    nodes?: NodeDefinition[];
+    edges?: EdgeDefinition[];
+  }>(),
+  {
+    nodes: () => [],
+    edges: () => [],
+  },
+);
 
 const cy = ref();
 const isLoading = ref(true);
@@ -19,31 +22,29 @@ const initCytoscape = () => {
     container: cy.value,
     elements: {
       nodes: props.nodes,
-      edges: props.edges
+      edges: props.edges,
     },
     layout: {
-      name: 'preset'
+      name: "preset",
     },
-    style: fetch("./public/arrows.json").then((r) => r.json())
+    style: fetch("./public/arrows.json").then((r) => r.json()),
   });
   setTimeout(() => {
     isLoading.value = false;
-  }, 2000 )
-}
+  }, 2000);
+};
 watchEffect(initCytoscape);
 </script>
 <template>
-<div ref="cy"
-      id="cytoscape">
+  <div ref="cy" id="cytoscape">
     <Teleport to="#app">
-      <section class="info-container backdrop"
-    v-if="isLoading">
+      <section class="info-container backdrop" v-if="isLoading">
         <span class="info">
           <p>loading...</p>
         </span>
       </section>
     </Teleport>
-</div>
+  </div>
 </template>
 
 <style scoped>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from "vue";
 import yaml from "js-yaml";
-import Cytoscape from './components/Cytoscape.vue';
+import Cytoscape from "./components/Cytoscape.vue";
 import { EdgeDefinition, ElementsDefinition, NodeDefinition } from "cytoscape";
 /* 
   need to be able to make a docker compose so i need to add:
@@ -22,11 +22,14 @@ import { EdgeDefinition, ElementsDefinition, NodeDefinition } from "cytoscape";
 const nodes = ref<NodeDefinition[] | null>(null);
 const edges = ref<EdgeDefinition[] | null>(null);
 
-const fetchDevData = async (path: string | URL) => await fetch(path).then((res) => {
-  return res.json();
-}).catch((e) => {
-  throw new Error(e);
-});
+const fetchDevData = async (path: string | URL) =>
+  await fetch(path)
+    .then((res) => {
+      return res.json();
+    })
+    .catch((e) => {
+      throw new Error(e);
+    });
 
 const fileData = ref<ElementsDefinition | null>(null);
 const fileInputEle = ref();
@@ -34,11 +37,11 @@ const fileInputEle = ref();
 const readFile = async (file: Blob) => {
   const file_data = await file.text();
   const dockerCompose = yaml.load(file_data);
-  fileData.value =  composeToCytosape(dockerCompose.services);
-}
+  fileData.value = composeToCytosape(dockerCompose.services);
+};
 
 const composeToCytosape = (compose: any): ElementsDefinition => {
-  const parsed = {nodes: [], edges: []} as ElementsDefinition;
+  const parsed = { nodes: [], edges: [] } as ElementsDefinition;
 
   if (Object.hasOwn(compose, "services")) {
     /* 
@@ -55,8 +58,11 @@ const composeToCytosape = (compose: any): ElementsDefinition => {
   }
 
   return parsed;
-}
-const networksToEdges = (networks: {[key: string]: any}, services: {[key: string]: any}) => { 
+};
+const networksToEdges = (
+  networks: { [key: string]: any },
+  services: { [key: string]: any },
+) => {
   /* 
     Need to loop over networks Object
     Find all services that use network
@@ -64,8 +70,8 @@ const networksToEdges = (networks: {[key: string]: any}, services: {[key: string
   */
   // return Object.entries(obj).map(([id, data], idx) => {});
   return [];
-}
-const servicesToNodes = (services: {[key: string]: any}) => { 
+};
+const servicesToNodes = (services: { [key: string]: any }) => {
   /* 
     Need to x coordinates based off of the services "depends on" value
     - Call side effect function based on service that has "depends on" and that an easily make the edge from the .map()!
@@ -74,28 +80,29 @@ const servicesToNodes = (services: {[key: string]: any}) => {
     return {
       data: {
         id,
-        ...data
+        ...data,
       },
       renderPosition: {
         x: 0,
-        y: idx * 100  
-      }
-    }
+        y: idx * 100,
+      },
+    };
   });
-}
+};
 
 const resetCytoscape = () => {
   nodes.value = [
     {
-      "data": {
-        "id": "service one"
+      data: {
+        id: "service one",
       },
-      "renderedPosition": {
-        "x": 0,
-        "y": 0
-      }
-    }];
-    edges.value = [];
+      renderedPosition: {
+        x: 0,
+        y: 0,
+      },
+    },
+  ];
+  edges.value = [];
 };
 
 watch(fileData, async (nv) => {
@@ -109,33 +116,37 @@ watch(fileData, async (nv) => {
 </script>
 
 <template>
-<header id="app-header">
-  <button @click="resetCytoscape" class="new">new</button>
-  <button class="upload" @click="fileInputEle.click()">upload
-    <input
-      ref="fileInputEle"
-      type="file"
-      @change="(e: any) => readFile(e.target.files.item(0))" />
-  </button>
-</header>
-<main id="app-main">
-  <Cytoscape v-if="Array.isArray(nodes) && Array.isArray(edges)" v-bind="{ nodes, edges }" />
-</main>
-<section class="info-container"
-      v-if="!nodes">
-  <span class="info">
-    <p>Please upload a docker-compose.yml file</p>
-  </span>
-</section>
+  <header id="app-header">
+    <button @click="resetCytoscape" class="new">new</button>
+    <button class="upload" @click="fileInputEle.click()">
+      upload
+      <input
+        ref="fileInputEle"
+        type="file"
+        @change="(e: any) => readFile(e.target.files.item(0))"
+      />
+    </button>
+  </header>
+  <main id="app-main">
+    <Cytoscape
+      v-if="Array.isArray(nodes) && Array.isArray(edges)"
+      v-bind="{ nodes, edges }"
+    />
+  </main>
+  <section class="info-container" v-if="!nodes">
+    <span class="info">
+      <p>Please upload a docker-compose.yml file</p>
+    </span>
+  </section>
 </template>
 
 <style>
 #app-header {
   border-bottom: 1px solid white;
-  flex: 0 0 2.50%;
+  flex: 0 0 2.5%;
   display: flex;
   column-gap: 2rem;
-  padding: .5ch;
+  padding: 0.5ch;
 }
 
 #app-main {
@@ -164,7 +175,7 @@ watch(fileData, async (nv) => {
 
 .info {
   border: 2px dashed aliceblue;
-  border-radius: .5rem;
+  border-radius: 0.5rem;
   padding: 1rem;
   width: 40dvw;
   height: 20dvh;

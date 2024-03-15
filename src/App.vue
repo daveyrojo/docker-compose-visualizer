@@ -27,6 +27,62 @@ const fetchDevData = async (path: string | URL) => await fetch(path).then((res) 
   throw new Error(e);
 });
 
+const fileData = ref<ElementsDefinition | null>(null);
+const fileInputEle = ref();
+
+const readFile = async (file: Blob) => {
+  const file_data = await file.text();
+  const dockerCompose = yaml.load(file_data);
+  fileData.value =  composeToCytosape(dockerCompose.services);
+}
+
+const composeToCytosape = (compose: any): ElementsDefinition => {
+  const parsed = {nodes: [], edges: []} as ElementsDefinition;
+
+  if (Object.hasOwn(compose, "services")) {
+    /* 
+      Need to create dependsOnToEdges 
+      Find all services that have "depends on" values and create edge with arrow pointing towards the node that "depends on" the other
+
+      - If when calling servicesToNodes we find a service with a depends on value we can easily have a side effect in that .map!
+    */
+    parsed.nodes = servicesToNodes(compose.services);
+  }
+
+  if (Object.hasOwn(compose, "networks")) {
+    parsed.edges = networksToEdges(compose.networks, compose.services);
+  }
+
+  return parsed;
+}
+const networksToEdges = (networks: {[key: string]: any}, services: {[key: string]: any}) => { 
+  /* 
+    Need to loop over networks Object
+    Find all services that use network
+    Create Edge for each connection
+  */
+  // return Object.entries(obj).map(([id, data], idx) => {});
+  return [];
+}
+const servicesToNodes = (services: {[key: string]: any}) => { 
+  /* 
+    Need to x coordinates based off of the services "depends on" value
+    - Call side effect function based on service that has "depends on" and that an easily make the edge from the .map()!
+  */
+  return Object.entries(services).map(([id, data], idx) => {
+    return {
+      data: {
+        id,
+        ...data
+      },
+      renderPosition: {
+        x: 0,
+        y: idx * 100  
+      }
+    }
+  });
+}
+
 const resetCytoscape = () => {
   nodes.value = [
     {
@@ -40,6 +96,15 @@ const resetCytoscape = () => {
     }];
     edges.value = [];
 };
+
+watch(fileData, async (nv) => {
+  if (!nv) return;
+  if (Object.hasOwn(nv, "nodes")) {
+    await nextTick();
+    nodes.value = nv.nodes;
+    edges.value = nv.edges;
+  }
+});
 </script>
 
 <template>

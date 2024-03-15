@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, nextTick } from "vue";
+import { ref, watch, nextTick } from "vue";
 import yaml from "js-yaml";
 import Cytoscape from './components/Cytoscape.vue';
 import { EdgeDefinition, ElementsDefinition, NodeDefinition } from "cytoscape";
@@ -21,6 +21,7 @@ import { EdgeDefinition, ElementsDefinition, NodeDefinition } from "cytoscape";
 */
 const nodes = ref<NodeDefinition[] | null>(null);
 const edges = ref<EdgeDefinition[] | null>(null);
+
 const fetchDevData = async (path: string | URL) => await fetch(path).then((res) => {
   return res.json();
 }).catch((e) => {

@@ -68,15 +68,24 @@ const edges = [
 </script>
 
 <template>
-
 <header id="app-header">
-  <button>new</button>
-  <button>upload</button>
-</header> 
+  <button @click="resetCytoscape" class="new">new</button>
+  <button class="upload" @click="fileInputEle.click()">upload
+    <input
+      ref="fileInputEle"
+      type="file"
+      @change="(e: any) => readFile(e.target.files.item(0))" />
+  </button>
+</header>
 <main id="app-main">
-  <Cytoscape v-bind="{nodes, edges}"  />
+  <Cytoscape v-if="Array.isArray(nodes) && Array.isArray(edges)" v-bind="{ nodes, edges }" />
 </main>
-
+<section class="info-container"
+      v-if="!nodes">
+  <span class="info">
+    <p>Please upload a docker-compose.yml file</p>
+  </span>
+</section>
 </template>
 
 <style>

@@ -79,9 +79,9 @@ const edges = [
 
 </template>
 
-<style scoped>
+<style>
 #app-header {
-  border-bottom: 1px solid white; 
+  border-bottom: 1px solid white;
   flex: 0 0 2.50%;
   display: flex;
   column-gap: 2rem;
@@ -94,5 +94,44 @@ const edges = [
   overflow: hidden;
   background-color: transparent;
   flex: 1 1;
+}
+
+.info-container {
+  position: absolute;
+  text-align: center;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+}
+
+.backdrop {
+  width: 100dvw;
+  height: 100dvh;
+  backdrop-filter: blur(5px);
+  display: flex;
+}
+
+.info {
+  border: 2px dashed aliceblue;
+  border-radius: .5rem;
+  padding: 1rem;
+  width: 40dvw;
+  height: 20dvh;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #242424;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+button {
+  padding: 2.5px;
+  width: 4rem;
+  cursor: pointer;
 }
 </style>

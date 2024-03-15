@@ -37,7 +37,7 @@ const fileInputEle = ref();
 const readFile = async (file: Blob) => {
   const file_data = await file.text();
   const dockerCompose = yaml.load(file_data);
-  fileData.value = composeToCytosape(dockerCompose.services);
+  fileData.value = composeToCytosape(dockerCompose);
 };
 
 const composeToCytosape = (compose: any): ElementsDefinition => {

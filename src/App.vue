@@ -1,54 +1,8 @@
 <script setup lang="ts">
+import { onMounted, ref, watch, nextTick } from "vue";
+import yaml from "js-yaml";
 import Cytoscape from './components/Cytoscape.vue';
-
-const edges = [
-    {
-      data: {
-        id: "network",
-        source: "service one",
-        target: "service two"
-      }
-    } ,
-    {
-      data: {
-        id: "depends-on",
-        arrow: "triangle",
-        source: "service one",
-        target: "service three",
-      }
-      
-    }
-  ];
-
-  const nodes = [  {
-    data: { 
-      id: 'service one', 
-    },
-    renderedPosition: {
-      x: 0,
-      y: 0
-    }
-  },
-  {
-    data: { 
-      id: 'service two', 
-    },
-    renderedPosition: {
-      x: 0,
-      y: 100
-    }
-  },
-  {
-    data: { 
-      id: 'service three',
-      "depends-on": "service two"
-    },
-    renderedPosition: {
-      x: 100,
-      y: 0
-    }
-  }];
-
+import { EdgeDefinition, ElementsDefinition, NodeDefinition } from "cytoscape";
 /* 
   need to be able to make a docker compose so i need to add:
    - ability to add nodes and edges

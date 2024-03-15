@@ -33,14 +33,23 @@ const initCytoscape = () => {
 watchEffect(initCytoscape);
 </script>
 <template>
-  <div ref="cy"
-       id="cytoscape"></div>
+<div ref="cy"
+      id="cytoscape">
+    <Teleport to="#app">
+      <section class="info-container backdrop"
+    v-if="isLoading">
+        <span class="info">
+          <p>loading...</p>
+        </span>
+      </section>
+    </Teleport>
+</div>
 </template>
 
-<style>
+<style scoped>
 #cytoscape {
   background-color: transparent;
   flex: 1;
-
+  position: relative;
 }
 </style>

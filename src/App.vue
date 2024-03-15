@@ -21,16 +21,6 @@ import { EdgeDefinition, ElementsDefinition, NodeDefinition } from "cytoscape";
 */
 const nodes = ref<NodeDefinition[] | null>(null);
 const edges = ref<EdgeDefinition[] | null>(null);
-
-const fetchDevData = async (path: string | URL) =>
-  await fetch(path)
-    .then((res) => {
-      return res.json();
-    })
-    .catch((e) => {
-      throw new Error(e);
-    });
-
 const fileData = ref<ElementsDefinition | null>(null);
 const fileInputEle = ref();
 
@@ -43,6 +33,10 @@ const readFile = async (file: Blob) => {
 const composeToCytosape = (compose: any): ElementsDefinition => {
   const parsed = { nodes: [], edges: [] } as ElementsDefinition;
 
+  if (Object.hasOwn(compose, "networks")) {
+    parsed.edges = networksToEdges(compose.networks, compose.services);
+  }
+
   if (Object.hasOwn(compose, "services")) {
     /* 
       Need to create dependsOnToEdges 
@@ -50,13 +44,10 @@ const composeToCytosape = (compose: any): ElementsDefinition => {
 
       - If when calling servicesToNodes we find a service with a depends on value we can easily have a side effect in that .map!
     */
-    parsed.nodes = servicesToNodes(compose.services);
+    const services = servicesToNodes(compose.services);
+    parsed.nodes = services.nodes;
+    parsed.edges.push(...services.edges)
   }
-
-  if (Object.hasOwn(compose, "networks")) {
-    parsed.edges = networksToEdges(compose.networks, compose.services);
-  }
-
   return parsed;
 };
 const networksToEdges = (
@@ -68,26 +59,63 @@ const networksToEdges = (
     Find all services that use network
     Create Edge for each connection
   */
-  // return Object.entries(obj).map(([id, data], idx) => {});
-  return [];
+  const names: {[key: string]: string[]} = {};
+  Object.keys(networks).forEach((k) => names[k] = []);
+  Object.entries(services).forEach(([id, data]) => {
+    const hasNetwork = Object.hasOwn(data, "networks");
+    if (!hasNetwork) return;
+    for (const nw of data.networks) {
+      names[nw].push(id);
+    }
+  });
+
+  const edgeArr = [] as EdgeDefinition[];
+  Object.entries(names).forEach(([id, arr]) => {
+    for (let i = 0; i < arr.length - 1; i++) {
+      edgeArr.push({
+        data: {
+          id,
+          source: arr[i],
+          target: arr[i + 1]
+        }
+      })
+    }
+  })
+  return edgeArr;
 };
+
 const servicesToNodes = (services: { [key: string]: any }) => {
   /* 
     Need to x coordinates based off of the services "depends on" value
     - Call side effect function based on service that has "depends on" and that an easily make the edge from the .map()!
   */
-  return Object.entries(services).map(([id, data], idx) => {
+  const dependsOnEdges = [] as EdgeDefinition[];
+  const nodes = Object.entries(services).map(([id, data], idx) => {
+    const isDependent = Object.hasOwn(data, "depends_on");
+    if (isDependent) {
+      data.depends_on.forEach((source: string) => {
+        dependsOnEdges.push({
+          data: {
+            id: "depends_on",
+            arrow: "triangle",
+            source,
+            target: id
+          }
+        })
+      })
+    }
     return {
       data: {
         id,
         ...data,
       },
-      renderPosition: {
-        x: 0,
-        y: idx * 100,
+      position: {
+        x: isDependent ? data.depends_on.length * 100 : 0,
+        y: isDependent ? 0 : idx * 100,
       },
     };
   });
+  return {nodes, edges: dependsOnEdges}
 };
 
 const resetCytoscape = () => {

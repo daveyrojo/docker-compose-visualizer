@@ -10,14 +10,12 @@ import { EdgeDefinition, ElementsDefinition, NodeDefinition } from "cytoscape";
     - connect nodes and determine network vs depends on connections
     - edit docker specific data -> will go into node.data or maybe node.scratch
 
-  network connections are line
-  depends on connections are a line with arrow pointing to node that DEPENDS ON other node
 
-  might want to make networks their own nodes?
+  Networks need to be nodes - using different line styles is confusing
 
   might want to make networks "parent nodes"?
+  might want to make volumes children nodes of services?
 
-  need to take docker compose yaml and parse data so I can find nodes that are connected via networks and nodes that depend on each other
 */
 const nodes = ref<NodeDefinition[] | null>(null);
 const edges = ref<EdgeDefinition[] | null>(null);

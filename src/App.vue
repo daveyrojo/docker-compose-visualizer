@@ -5,10 +5,10 @@ import Cytoscape from './components/Cytoscape.vue';
 import { EdgeDefinition, ElementsDefinition, NodeDefinition } from "cytoscape";
 /* 
   need to be able to make a docker compose so i need to add:
-   - ability to add nodes and edges
-   - delete nodes and deges
-   - connect nodes and determine network vs depends on connections
-   - edit docker specific data -> will go into node.data or maybe node.scratch
+    - ability to add nodes and edges
+    - delete nodes and edges
+    - connect nodes and determine network vs depends on connections
+    - edit docker specific data -> will go into node.data or maybe node.scratch
 
   network connections are line
   depends on connections are a line with arrow pointing to node that DEPENDS ON other node

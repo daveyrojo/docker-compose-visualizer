@@ -65,6 +65,27 @@ const edges = [
 
   need to take docker compose yaml and parse data so I can find nodes that are connected via networks and nodes that depend on each other
 */
+const nodes = ref<NodeDefinition[] | null>(null);
+const edges = ref<EdgeDefinition[] | null>(null);
+const fetchDevData = async (path: string | URL) => await fetch(path).then((res) => {
+  return res.json();
+}).catch((e) => {
+  throw new Error(e);
+});
+
+const resetCytoscape = () => {
+  nodes.value = [
+    {
+      "data": {
+        "id": "service one"
+      },
+      "renderedPosition": {
+        "x": 0,
+        "y": 0
+      }
+    }];
+    edges.value = [];
+};
 </script>
 
 <template>

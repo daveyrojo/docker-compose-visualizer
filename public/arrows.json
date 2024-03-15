@@ -21,19 +21,23 @@
     "selector": "edge",
     "style": {
       "width": 1,
-      "curve-style": "straight"
+      "curve-style": "straight",
+      "line-style": "dashed",
+      "line-color": "green"
     }
   },
   {
     "selector": "edge[arrow]",
     "style": {
-      "target-arrow-shape": "data(arrow)"
+      "target-arrow-shape": "data(arrow)",
+      "line-color": "yellow",
+      "line-style": "solid"
     }
   },
   {
-    "selector": "edge.hollow",
+    "selector": "edge.depends_on",
     "style": {
-      "target-arrow-fill": "hollow"
+      "target-arrow-shape": "triangle"
     }
   }
 ]

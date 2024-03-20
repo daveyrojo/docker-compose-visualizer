@@ -27,7 +27,7 @@ const initCytoscape = () => {
     layout: {
       name: "preset",
     },
-    style: fetch("./public/arrows.json").then((r) => r.json()),
+    style: fetch("/arrows.json").then((r) => r.json()),
   });
   setTimeout(() => {
     isLoading.value = false;

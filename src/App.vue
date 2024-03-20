@@ -2,7 +2,7 @@
 import { ref, watch, nextTick } from "vue";
 import yaml from "js-yaml";
 import Cytoscape from "./components/Cytoscape.vue";
-import { EdgeDefinition, ElementsDefinition, NodeDefinition } from "cytoscape";
+import type { EdgeDefinition, ElementsDefinition, NodeDefinition } from "cytoscape";
 /* 
   need to be able to make a docker compose so i need to add:
     - ability to add nodes and edges

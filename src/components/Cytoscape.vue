@@ -27,7 +27,7 @@ const initCytoscape = () => {
     layout: {
       name: "grid",
     },
-    style: fetch("/arrows.json").then((r) => r.json()),
+    style: fetch("/style.json").then((r) => r.json()),
   });
   setTimeout(() => {
     isLoading.value = false;

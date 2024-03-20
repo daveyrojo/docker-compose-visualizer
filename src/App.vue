@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, nextTick } from "vue";
+import { ref, watch, nextTick, reactive } from "vue";
 import yaml from "js-yaml";
 import Cytoscape from "./components/Cytoscape.vue";
 import type { EdgeDefinition, ElementsDefinition, NodeDefinition } from "cytoscape";
@@ -17,6 +17,12 @@ import type { EdgeDefinition, ElementsDefinition, NodeDefinition } from "cytosca
   might want to make volumes children nodes of services?
 
 */
+type UserOptions = {
+  networksAsNodes: boolean;
+}
+const userOptions = reactive<UserOptions>({
+  networksAsNodes: false
+})
 const nodes = ref<NodeDefinition[] | null>(null);
 const edges = ref<EdgeDefinition[] | null>(null);
 const fileData = ref<ElementsDefinition | null>(null);
@@ -25,14 +31,18 @@ const fileInputEle = ref();
 const readFile = async (file: Blob) => {
   const file_data = await file.text();
   const dockerCompose = yaml.load(file_data);
-  fileData.value = composeToCytosape(dockerCompose);
+  fileData.value = composeToCytosape(dockerCompose, userOptions);
 };
 
-const composeToCytosape = (compose: any): ElementsDefinition => {
+const composeToCytosape = (compose: any, opts: UserOptions): ElementsDefinition => {
   const parsed = { nodes: [], edges: [] } as ElementsDefinition;
 
   if (Object.hasOwn(compose, "networks")) {
-    parsed.edges = networksToEdges(compose.networks, compose.services);
+    if (opts.networksAsNodes) {
+      parsed.nodes.push(...networksToNodes(compose.networks));
+    } else {
+      parsed.edges.push(...networksToEdges(compose.networks, compose.services))
+    }
   }
 
   if (Object.hasOwn(compose, "services")) {
@@ -43,7 +53,7 @@ const composeToCytosape = (compose: any): ElementsDefinition => {
       - If when calling servicesToNodes we find a service with a depends on value we can easily have a side effect in that .map!
     */
     const services = servicesToNodes(compose.services);
-    parsed.nodes = services.nodes;
+    parsed.nodes.push(...services.nodes);
     parsed.edges.push(...services.edges)
   }
   return parsed;
@@ -81,7 +91,7 @@ const networksToEdges = (
   })
   return edgeArr;
 };
-
+const networksToNodes = (networks: any) => servicesToNodes(networks);
 const servicesToNodes = (services: { [key: string]: any }) => {
   /* 
     Need to x coordinates based off of the services "depends on" value
@@ -115,6 +125,7 @@ const servicesToNodes = (services: { [key: string]: any }) => {
   });
   return {nodes, edges: dependsOnEdges}
 };
+
 
 const resetCytoscape = () => {
   nodes.value = [

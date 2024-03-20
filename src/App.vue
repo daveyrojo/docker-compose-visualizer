@@ -10,8 +10,7 @@ import type { EdgeDefinition, ElementsDefinition, NodeDefinition } from "cytosca
     - connect nodes and determine network vs depends on connections
     - edit docker specific data -> will go into node.data or maybe node.scratch
 
-
-  Networks need to be nodes - using different line styles is confusing
+  instead of using nodes and edges array - whih leads to many helper functions - use the elements array and use the "groups" property?
 
   might want to make networks "parent nodes"?
   might want to make volumes children nodes of services?

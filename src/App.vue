@@ -21,7 +21,7 @@ type UserOptions = {
   networksAsNodes: boolean;
 }
 const userOptions = reactive<UserOptions>({
-  networksAsNodes: false
+  networksAsNodes: true
 })
 const nodes = ref<NodeDefinition[] | null>(null);
 const edges = ref<EdgeDefinition[] | null>(null);
@@ -39,7 +39,9 @@ const composeToCytosape = (compose: any, opts: UserOptions): ElementsDefinition 
 
   if (Object.hasOwn(compose, "networks")) {
     if (opts.networksAsNodes) {
-      parsed.nodes.push(...networksToNodes(compose.networks));
+      const networksNodes = networksToNodes(compose);
+      parsed.nodes.push(...networksNodes.nodes);
+      parsed.edges.push(...networksNodes.edges);
     } else {
       parsed.edges.push(...networksToEdges(compose.networks, compose.services))
     }
@@ -91,7 +93,41 @@ const networksToEdges = (
   })
   return edgeArr;
 };
-const networksToNodes = (networks: any) => servicesToNodes(networks);
+const networksToNodes = ({networks, services}: {networks: any, services: any}) =>{ 
+  const { nodes, edges } = servicesToNodes(networks);
+  Object.entries(services).forEach(([id, data]: any) => {
+    const hasNetwork = Object.hasOwn(data, "networks");
+    if (!hasNetwork) return;
+    for (const nw of data.networks) {
+      // {
+      //     data: {
+      //       id: "depends_on",
+      //       arrow: "triangle",
+      //       source,
+      //       target: id
+      //     }
+      //   }
+      edges.push({
+        data: {
+          id: id + "_" + nw,
+          source: nw,
+          target: id
+        }
+      })
+    }
+  });
+  return {nodes: nodes.map(({data, ...n}) => {
+    return {
+      ...n,
+      data: {
+        ...data,
+        shape: "triangle",
+        backgroundColor: "red"
+      }
+    }
+  }), edges}
+
+};
 const servicesToNodes = (services: { [key: string]: any }) => {
   /* 
     Need to x coordinates based off of the services "depends on" value
@@ -99,7 +135,7 @@ const servicesToNodes = (services: { [key: string]: any }) => {
   */
   const dependsOnEdges = [] as EdgeDefinition[];
   const nodes = Object.entries(services).map(([id, data], idx) => {
-    const isDependent = Object.hasOwn(data, "depends_on");
+    const isDependent = data && Object.hasOwn(data, "depends_on");
     if (isDependent) {
       data.depends_on.forEach((source: string) => {
         dependsOnEdges.push({
@@ -123,7 +159,18 @@ const servicesToNodes = (services: { [key: string]: any }) => {
       },
     };
   });
-  return {nodes, edges: dependsOnEdges}
+  return {
+    nodes: nodes.map(({data, ...n}): any => {
+      return {
+        ...n,
+        data: {
+          ...data,
+          backgroundColor: "dodgerblue",
+          shape: "circle"
+        }
+      }
+    }),
+   edges: dependsOnEdges}
 };
 
 

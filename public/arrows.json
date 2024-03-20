@@ -2,13 +2,14 @@
   {
     "selector": "node",
     "style": {
+      "shape": "data(shape)",
       "text-valign": "bottom",
       "text-halign": "center",
       "width": 16,
       "height": 16,
       "label": "data(id)",
       "color": "aliceblue",
-      "background-color": "dodgerblue"
+      "background-color": "data(backgroundColor)"
     }
   },
   {

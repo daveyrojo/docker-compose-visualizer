@@ -25,7 +25,7 @@ const initCytoscape = () => {
       edges: props.edges,
     },
     layout: {
-      name: "preset",
+      name: "grid",
     },
     style: fetch("/arrows.json").then((r) => r.json()),
   });
